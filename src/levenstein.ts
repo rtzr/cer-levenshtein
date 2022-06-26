@@ -29,12 +29,12 @@ export const levenstein = (sourceTokens: string[], targetTokens: string[]) => {
     );
     for (let i = 1; i <= m; i++) {
         d[i][0] = i;
-        history[i][0] = new Array(i).fill(i).map((elem, idx) => [elem, idx, "ins"]);
+        history[i][0] = new Array(i).fill(i).map((elem, idx) => [elem, idx, Op.Del]);
     }
 
     for (let j = 1; j <= n; j++) {
         d[0][j] = j;
-        history[0][j] = new Array(j).fill(j).map((elem, idx) => [idx, elem, "ins"]);
+        history[0][j] = new Array(j).fill(j).map((elem, idx) => [idx, elem, Op.Ins]);
     }
 
     for (let j = 1; j <= n; j++) {
@@ -67,16 +67,18 @@ export const levenstein = (sourceTokens: string[], targetTokens: string[]) => {
     while (result[0] && typeof result[0][0] !== "number") {
         try {
             const remainders = result.splice(1);
-            result = result[0].concat(remainders);
-            if (result.length == 87) {
-                console.error("result.length == 87");
+            if (result[0][0]) {
+                result = result[0].concat(remainders);
+            } else {
+                result = remainders;
+                break;
             }
         } catch (e) {
             console.error(e);
         }
     }
 
-    const final_ops = result.splice(1).map(elem => [elem[0], elem[1], OpNames[elem[2]]]);
+    const final_ops = result.map(elem => [elem[0], elem[1], OpNames[elem[2]]]);
 
     return {
         distance: d[m][n],
