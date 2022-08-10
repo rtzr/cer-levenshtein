@@ -45,8 +45,10 @@ const align_string = (ref: string, hyp: string, _editops: any[][], slice_view = 
         el => el.index!
     );
 
-    let ref_added: number = 0;
+    let ref_added = 0;
+    let hyp_added = 0;
     const ref_added_index: number[] = [];
+    // const hyp_added_index: number[] = [];
     const ref_sub_index: number[] = [];
     for (const op of _editops) {
         // [ref_idx, hyp_inx, op_type]
@@ -62,13 +64,14 @@ const align_string = (ref: string, hyp: string, _editops: any[][], slice_view = 
                 ref_sub_index.push(op[0] - 1 + ref_added);
                 break;
             case "Del":
-                hyp_array.splice(op[1] + ref_added, 0, "🟨");
+                hyp_array.splice(op[1] + hyp_added, 0, "🟨");
+                hyp_added += 1;
                 break;
         }
     }
 
     for (let i = 0; i < ref_space_indices.length; i++) {
-        ref_space_indices[i] += ref_added_index.filter(el => el < ref_space_indices[i] - i).length;
+        ref_space_indices[i] += ref_added_index.filter(el => el <= ref_space_indices[i] - i).length;
     }
 
     const BIG_SPACE = "\u3000";
@@ -93,12 +96,12 @@ const align_string = (ref: string, hyp: string, _editops: any[][], slice_view = 
     }
     // Ideographic Space U+3000
     const ref_sliced: string[] = get_n_sliced(ref_array, slice_view).map(el =>
-        el.replaceAll(/([A-Z0-9])/gi, "$1 ")
+        el.replaceAll(/([A-Z0-9])/gi, " $1")
     );
     const hyp_sliced: string[] = get_n_sliced(hyp_array, slice_view).map(el =>
-        el.replaceAll(/([A-Z0-9])/gi, "$1 ")
+        el.replaceAll(/([A-Z0-9])/gi, " $1")
     );
-    const sub_sliced = get_n_sliced(new_sub_array, slice_view);
+    const sub_sliced: string[] = get_n_sliced(new_sub_array, slice_view);
 
     return [ref_sliced, hyp_sliced, sub_sliced];
 };

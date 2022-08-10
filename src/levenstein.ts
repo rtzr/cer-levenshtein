@@ -9,7 +9,7 @@ const OpNames = Object.fromEntries(Object.entries(Op).map((str, _) => [str[1], s
 export const levenstein = (sourceTokens: string[], targetTokens: string[]) => {
     if (sourceTokens.length === 0 || targetTokens.length === 0) {
         const dist = Math.max(sourceTokens.length, targetTokens.length);
-        return { distance: dist, editops: [], ratio: dist / targetTokens.length };
+        return { distance: dist, editops: [], ratio: dist / sourceTokens.length * 100.0 };
     }
 
     // add blank for computation
@@ -29,12 +29,12 @@ export const levenstein = (sourceTokens: string[], targetTokens: string[]) => {
     );
     for (let i = 1; i <= m; i++) {
         d[i][0] = i;
-        history[i][0] = new Array(i).fill(i).map((elem, idx) => [elem, idx, Op.Del]);
+        history[i][0] = new Array(i).fill(i).map((elem, _) => [elem, 0, Op.Del]);
     }
 
     for (let j = 1; j <= n; j++) {
         d[0][j] = j;
-        history[0][j] = new Array(j).fill(j).map((elem, idx) => [idx, elem, Op.Ins]);
+        history[0][j] = new Array(j).fill(j).map((elem, _) => [0, elem, Op.Ins]);
     }
 
     for (let j = 1; j <= n; j++) {
