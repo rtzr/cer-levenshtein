@@ -1,5 +1,16 @@
 import { levenstein } from "./levenstein";
 
+// const d = /^(\p{Block=CJK Unified Ideographs}|\p{Block=CJK Unified Ideographs Extension A}|\p{Block=CJK Unified Ideographs Extension B}|\p{Block=CJK Unified Ideographs Extension C}|\p{Block=CJK Unified Ideographs Extension D}|\p{Block=CJK Unified Ideographs Extension E}|\p{Block=CJK Unified Ideographs Extension F}|[\uFA0E\uFA0F\uFA11\uFA13\uFA14\uFA1F\uFA21\uFA23\uFA24\uFA27-\uFA29])+$/giu;
+const regex_candidates = [
+    "\\p{Unified_Ideograph}\u3006\u3007", "\ufe00-\ufe0f", // chinese
+    "\u30a1-\u30f6\u3041-\u3093\uff00-\uffff\u4e00-\u9fa5", // japanese
+    "\u3131-\u314e", "\u314f-\u3163", "\uac00-\ud7a3", // korean
+    "🟩⬜🟨", // custom for cer-levenstein
+    "\u3000 "]; // space
+const detect_none_cjk_regex = new RegExp(`([${regex_candidates.map(e => "^" + e).join("|")}])`, "giu");
+
+
+
 const cer = (a: string, b: string) => {
     const replaced_a = a.replace(/\s/g, ``).match(/./g) || [];
     const replaced_b = b.replace(/\s/g, ``).match(/./g) || [];
@@ -96,10 +107,10 @@ const align_string = (ref: string, hyp: string, _editops: any[][], slice_view = 
     }
     // Ideographic Space U+3000
     const ref_sliced: string[] = get_n_sliced(ref_array, slice_view).map(el =>
-        el.replaceAll(/([A-Z0-9])/gi, " $1")
+        el.replaceAll(detect_none_cjk_regex, " $1")
     );
     const hyp_sliced: string[] = get_n_sliced(hyp_array, slice_view).map(el =>
-        el.replaceAll(/([A-Z0-9])/gi, " $1")
+        el.replaceAll(detect_none_cjk_regex, " $1")
     );
     const sub_sliced: string[] = get_n_sliced(new_sub_array, slice_view);
 
