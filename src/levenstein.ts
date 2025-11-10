@@ -25,7 +25,7 @@ export const levenstein = (sourceTokens: string[], targetTokens: string[]) => {
     const history: any[][] = new Array(m + 1).fill(undefined).map(() =>
         Array(n + 1)
             .fill(undefined)
-            .map(_ => [undefined])
+            .map((): any[] => [undefined])
     );
     for (let i = 1; i <= m; i++) {
         d[i][0] = i;
